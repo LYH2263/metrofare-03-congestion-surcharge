@@ -14,6 +14,9 @@ a { color: var(--accent); text-decoration: none; }
 table { width:100%; border-collapse:collapse; }
 th,td { text-align:left; padding:0.4rem; border-bottom:1px solid #243860; }
 button { background: var(--accent); border:0; padding:0.4rem 0.85rem; border-radius:6px; font-weight:600; cursor:pointer; color:#051018; }
+button:disabled { opacity:0.4; cursor:default; }
+.btn-ghost { background:transparent; border:1px solid var(--muted); color:var(--text); margin-left:0.4rem; }
+.amt { color:#ffb454; font-weight:600; }
 .hero-num { font-size:2.2rem; font-weight:700; color: var(--accent); }
 .muted { color: var(--muted); }
 input, select { background:#0a1528; border:1px solid var(--muted); color:var(--text); padding:0.35rem; border-radius:4px; }

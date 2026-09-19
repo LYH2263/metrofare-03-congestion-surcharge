@@ -13,6 +13,8 @@ def init_db():
         """
     CREATE TABLE IF NOT EXISTS stations(id INTEGER PRIMARY KEY, code TEXT, name TEXT);
     CREATE TABLE IF NOT EXISTS edges(a TEXT, b TEXT);
+    CREATE TABLE IF NOT EXISTS congestion_edges(
+        a TEXT, b TEXT, level TEXT, surcharge REAL, PRIMARY KEY(a, b));
     CREATE TABLE IF NOT EXISTS fare_rules(id INTEGER PRIMARY KEY, max_hops INTEGER, price REAL);
     CREATE TABLE IF NOT EXISTS settings(key TEXT PRIMARY KEY, value TEXT);
     CREATE TABLE IF NOT EXISTS calc_runs(
