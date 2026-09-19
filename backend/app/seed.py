@@ -15,6 +15,8 @@ def init_db():
     CREATE TABLE IF NOT EXISTS edges(a TEXT, b TEXT);
     CREATE TABLE IF NOT EXISTS fare_rules(id INTEGER PRIMARY KEY, max_hops INTEGER, price REAL);
     CREATE TABLE IF NOT EXISTS settings(key TEXT PRIMARY KEY, value TEXT);
+    CREATE TABLE IF NOT EXISTS edge_congestion(
+        a TEXT, b TEXT, level TEXT, surcharge REAL, PRIMARY KEY(a,b));
     CREATE TABLE IF NOT EXISTS calc_runs(
         id INTEGER PRIMARY KEY, kind TEXT, input_json TEXT, result_json TEXT, created_at TEXT);
     """

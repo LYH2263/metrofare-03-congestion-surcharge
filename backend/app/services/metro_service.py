@@ -1,5 +1,7 @@
 from app.db import connect
 from app.engines.route_quote import quote_route
+from app.modules.congestion_surcharge import CongestionError
+from app.repositories import congestion as congestion_repo
 from app.repositories import edges as edges_repo
 from app.repositories import fare_rules as rules_repo
 from app.repositories import runs as runs_repo
@@ -29,6 +31,19 @@ class MetroService:
     def edges(self):
         return [{"a": a, "b": b} for a, b in edges_repo.list_pairs(self._conn)]
 
+    def congestion_edges(self):
+        return congestion_repo.list_all(self._conn)
+
+    def set_congestion(self, a: str, b: str, level: str):
+        try:
+            return congestion_repo.upsert(self._conn, a, b, level)
+        except CongestionError as exc:
+            raise ValueError(str(exc)) from exc
+
+    def clear_congestion(self, a: str, b: str):
+        congestion_repo.delete(self._conn, a, b)
+        return {"a": a, "b": b, "cleared": True}
+
     def fare_rules(self):
         return rules_repo.list_ordered(self._conn)
 
@@ -38,7 +53,8 @@ class MetroService:
     def quote(self, start: str, end: str, persist: bool):
         edges = edges_repo.list_pairs(self._conn)
         rules = rules_repo.as_calc_rules(self._conn)
-        result = quote_route(edges, start, end, rules)
+        congestion = congestion_repo.list_all(self._conn)
+        result = quote_route(edges, start, end, rules, congestion)
         run_id = None
         if persist and result.get("reachable"):
             run_id = runs_repo.insert(self._conn, "quote", {"start": start, "end": end}, result)
@@ -46,6 +62,9 @@ class MetroService:
 
     def history(self, limit=50):
         return runs_repo.list_recent(self._conn, limit)
+
+    def history_run(self, run_id: int):
+        return runs_repo.get_by_id(self._conn, run_id)
 
     def dashboard(self):
         st = stations_repo.list_all(self._conn)

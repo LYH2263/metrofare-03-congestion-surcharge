@@ -16,3 +16,13 @@ def insert(conn: sqlite3.Connection, kind: str, payload: dict, result: dict) -> 
 def list_recent(conn: sqlite3.Connection, limit: int = 50) -> list[dict]:
     q = "SELECT * FROM calc_runs ORDER BY id DESC LIMIT ?"
     return [dict(r) for r in conn.execute(q, (limit,)).fetchall()]
+
+
+def get_by_id(conn: sqlite3.Connection, run_id: int) -> dict | None:
+    row = conn.execute("SELECT * FROM calc_runs WHERE id=?", (run_id,)).fetchone()
+    if row is None:
+        return None
+    item = dict(row)
+    item["input"] = json.loads(item["input_json"])
+    item["result"] = json.loads(item["result_json"])
+    return item
